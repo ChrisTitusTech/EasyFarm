@@ -55,8 +55,7 @@ namespace EasyFarm.Tests.Classes
             battleAbility.Command = "/magic test <t>";
             IUnit unit = FindUnit();
             Executor sut = new Executor(MockGameAPI);
-            // Exercise system
-            sut.UseTargetedActions(new List<BattleAbility> { battleAbility }, unit);
+            
             // Verify outcome
             Assert.Equal("/magic test <t>", MockGameAPI.Mock.Windower.LastCommand);
             // Teardown

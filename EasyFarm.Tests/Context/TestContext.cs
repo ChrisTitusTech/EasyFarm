@@ -25,66 +25,67 @@ using MemoryAPI;
 
 namespace EasyFarm.Tests.Context
 {
-    public class TestContext : IGameContext
-    {
-        public IConfig Config { get; set; }
-        public IPlayer Player { get; set; }
-        public IUnit Target { get; set; }
-        public bool IsFighting { get; set; }
-        public Zone Zone { get; set; }
-        public IList<IUnit> Units { get; set; }
-        public IMemoryAPI API { get; set; }
-        public StateMemory Memory { get; set; }
+	public class TestContext : IGameContext
+	{
+		public IConfig Config { get; set; }
+		public IPlayer Player { get; set; }
+		public IUnit Target { get; set; }
+		public bool IsFighting { get; set; }
+		public Zone Zone { get; set; }
+		public IList<IUnit> Units { get; set; }
+		public IMemoryAPI API { get; set; }
+		public StateMemory Memory { get; set; }
+		public MockEliteAPI MockAPI { get; set; }
+		public NavMesh NavMesh { get; set; } // Implementing the missing member
 
-        public MockEliteAPI MockAPI { get; set; }
+		public TestContext()
+		{
+		Units = new List<IUnit> { new MockUnit() };
+		Config = new MockConfig();
+		Player = new MockPlayer();
+		Target = new NullUnit();
+		MockAPI = new MockEliteAPI();
+		API = new MockEliteAPIAdapter(MockAPI);
+		Memory = new StateMemory(API);
+		NavMesh = new NavMesh(); // Initialize the NavMesh property
+		}
 
-        public TestContext()
-        {
-            Units = new List<IUnit> { new MockUnit() };
-            Config = new MockConfig();
-            Player = new MockPlayer();
-            Target = new NullUnit();
-            MockAPI = new MockEliteAPI();
-            API = new MockEliteAPIAdapter(MockAPI);
-            Memory = new StateMemory(API);
-        }
+		public void SetPlayerInjured()
+		{
+		Config.IsHealthEnabled = true;
+		Config.HighHealth = 50;
+		Config.LowHealth = 0;
+		MockAPI.Player.HPPCurrent = 25;
+		}
 
-        public void SetPlayerInjured()
-        {
-            Config.IsHealthEnabled = true;
-            Config.HighHealth = 50;
-            Config.LowHealth = 0;
-            MockAPI.Player.HPPCurrent = 25;
-        }
+		public void SetTargetInvalid()
+		{
+		Target.IsValid = false;
+		}
 
-        public void SetTargetInvalid()
-        {
-            Target.IsValid = false;
-        }
+		public void SetPlayerHealthy()
+		{
+		Config.IsHealthEnabled = false;
+		Config.HighHealth = 50;
+		Config.LowHealth = 0;
+		MockAPI.Player.HPPCurrent = 75;
+		}
 
-        public void SetPlayerHealthy()
-        {
-            Config.IsHealthEnabled = false;
-            Config.HighHealth = 50;
-            Config.LowHealth = 0;
-            MockAPI.Player.HPPCurrent = 75;
-        }
+		public void SetTargetValid()
+		{
+		Target.IsValid = true;
+		}
 
-        public void SetTargetValid()
-        {
-            Target.IsValid = true;
-        }
+		public void SetPlayerFighting()
+		{
+		MockAPI.Player.Status = Status.Fighting;
+		}
 
-        public void SetPlayerFighting()
-        {
-            MockAPI.Player.Status = Status.Fighting;
-        }
-
-        public void AddTrustToParty(string trustName = null)
-        {
-            MockAPI.PartyMember[1].Name = "Trust";
-            MockAPI.PartyMember[1].UnitPresent = true;
-            Config.TrustPartySize = 1;
-        }
-    }
+		public void AddTrustToParty(string trustName = null)
+		{
+		MockAPI.PartyMember[1].Name = "Trust";
+		MockAPI.PartyMember[1].UnitPresent = true;
+		Config.TrustPartySize = 1;
+		}
+	}
 }
